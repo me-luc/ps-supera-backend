@@ -24,8 +24,7 @@ public class TransactionController {
             @RequestParam(value = "operatorName", required = false) String operatorName,
             @RequestParam(value = "beginDate", required = false) String beginDate,
             @RequestParam(value = "endDate", required = false) String endDate,
-            HttpServletRequest request
-    ) {
+            HttpServletRequest request) {
         String accountIdHeader = request.getHeader("id");
         if (accountIdHeader == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -43,7 +42,6 @@ public class TransactionController {
 
             return new ResponseEntity<>(transactions, HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

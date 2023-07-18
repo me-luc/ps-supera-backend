@@ -10,7 +10,7 @@ public class TransactionDTO {
     private Date beginDate;
     private Date endDate;
     private String operatorName;
-    private  SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
     {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -28,7 +28,6 @@ public class TransactionDTO {
             return;
         }
         this.beginDate = sdf.parse(beginDate);
-        System.out.println(beginDate);
     }
 
     public void setEndDate(String endDate) throws ParseException {
