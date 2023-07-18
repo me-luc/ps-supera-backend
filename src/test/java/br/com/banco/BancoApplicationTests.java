@@ -67,8 +67,8 @@ public class BancoApplicationTests {
         Transaction t2 = createRandomTransactionWithDate(a1.getID(), "22/12/2021");
         Transaction t3 = createRandomTransactionWithDate(a1.getID(), "23/12/2021");
 
-        System.out.println("Created 1 account: \n" + a1.toString());
-        System.out.println("\nCreated 3 transactions: \n" + t1.toString()  + "\n" + t2.toString() + "\n" + t3.toString());
+        System.out.println("Created 1 account: \n" + a1);
+        System.out.println("\nCreated 3 transactions: \n" + t1 + "\n" + t2 + "\n" + t3);
 
         var response = mvc.perform(
                         get("/")
@@ -95,8 +95,8 @@ public class BancoApplicationTests {
         Transaction t2 = createRandomTransactionWithDate(a1.getID(), "22/12/2021");
         Transaction t3 = createRandomTransactionWithDate(a1.getID(), "23/12/2021");
 
-        System.out.println("Created 1 account: \n" + a1.toString());
-        System.out.println("\nCreated 3 transactions: \n" + t1.toString()  + "\n" + t2.toString() + "\n" + t3.toString());
+        System.out.println("Created 1 account: \n" + a1);
+        System.out.println("\nCreated 3 transactions: \n" + t1 + "\n" + t2 + "\n" + t3);
 
         var response = mvc.perform(
                         get("/")
@@ -125,8 +125,8 @@ public class BancoApplicationTests {
         Transaction t4 = createRandomTransactionWithDate(a1.getID(), "24/12/2021");
         Transaction t5 = createRandomTransactionWithDate(a1.getID(), "25/12/2021");
 
-        System.out.println("Created 1 account: \n" + a1.toString());
-        System.out.println("\nCreated 5 transactions: \n" + t1.toString()  + "\n" + t2.toString() + "\n" + t3.toString()  + "\n" + t4.toString() + "\n" + t5.toString());
+        System.out.println("Created 1 account: \n" + a1);
+        System.out.println("\nCreated 5 transactions: \n" + t1  + "\n" + t2 + "\n" + t3  + "\n" + t4 + "\n" + t5);
 
         var response = mvc.perform(
                     get("/")
@@ -154,8 +154,8 @@ public class BancoApplicationTests {
         Transaction t1 = createRandomTransfer(a1.getID());
         Transaction t2 = createRandomTransfer(a2.getID());
 
-        System.out.println("Created 2 accounts: \n\n" + a1.toString() + "\n" + a2.toString());
-        System.out.println("\nCreated 2 transactions: \n\n" + t1.toString() + "\n" + t2.toString());
+        System.out.println("Created 2 accounts: \n\n" + a1 + "\n" + a2);
+        System.out.println("\nCreated 2 transactions: \n\n" + t1 + "\n" + t2);
 
         var response = mvc.perform(
                 get("/")
@@ -276,7 +276,7 @@ public class BancoApplicationTests {
         Date date = faker.date().birthday();
         BigDecimal value = BigDecimal.valueOf(random.nextDouble() * 1000);
         String type = operationTypes[random.nextInt(3)];
-        String operatorName = (type == "Transferencia") ? faker.name().fullName() : null;
+        String operatorName = (type.equals("Transferencia")) ? faker.name().fullName() : null;
         Transaction transaction = new Transaction(date, value, type, operatorName, accountId);
         return transactionRepository.save(transaction);
     }
@@ -314,7 +314,7 @@ public class BancoApplicationTests {
         String[] operationTypes = {"Transferencia", "Saque", "Deposito"};
         BigDecimal value = BigDecimal.valueOf(random.nextDouble());
         String type = operationTypes[random.nextInt(3)];
-        String operatorName = (type == "Transferencia") ? faker.name().fullName() : null;
+        String operatorName = (type.equals("Transferencia")) ? faker.name().fullName() : null;
         Date date = sdf.parse(dateStr);
         Transaction transaction = new Transaction(date, value, type, operatorName, accountId);
         return transactionRepository.save(transaction);
