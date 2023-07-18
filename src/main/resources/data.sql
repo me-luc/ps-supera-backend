@@ -29,6 +29,7 @@ INSERT INTO transferencia (id,data_transferencia, valor, tipo, nome_operador_tra
 INSERT INTO transferencia (id,data_transferencia, valor, tipo, nome_operador_transacao, conta_id) VALUES (5,'2020-06-08 10:15:01+03',3241.23,'TRANSFERENCIA', 'Beltrano',1);
 INSERT INTO transferencia (id,data_transferencia, valor, tipo, nome_operador_transacao, conta_id) VALUES (6,'2021-04-01 12:12:04+03',25173.09,'TRANSFERENCIA', 'Ronnyscley',2);
 
+
 INSERT INTO conta (id_conta, nome_responsavel) VALUES (3, 'John Doe');
 INSERT INTO conta (id_conta, nome_responsavel) VALUES (4, 'Jane Smith');
 INSERT INTO conta (id_conta, nome_responsavel) VALUES (5, 'Michael Johnson');
@@ -42,3 +43,6 @@ INSERT INTO transferencia (id, data_transferencia, valor, tipo, nome_operador_tr
 INSERT INTO transferencia (id, data_transferencia, valor, tipo, nome_operador_transacao, conta_id) VALUES (13, '2022-07-07 11:30:00+03', 800.50, 'DEPOSITO', NULL, 5);
 INSERT INTO transferencia (id, data_transferencia, valor, tipo, nome_operador_transacao, conta_id) VALUES (14, '2022-08-08 15:45:00+03', -100.25, 'SAQUE', NULL, 5);
 INSERT INTO transferencia (id, data_transferencia, valor, tipo, nome_operador_transacao, conta_id) VALUES (15, '2022-09-09 12:15:00+03', 300.00, 'TRANSFERENCIA', 'Carol', 5);
+INSERT INTO transferencia (id, data_transferencia, valor, tipo, nome_operador_transacao, conta_id) VALUES (16, '2022-02-02 12:15:00+03', 30.00, 'TRANSFERENCIA', 'Carol', 5);
+INSERT INTO transferencia (id, data_transferencia, valor, tipo, nome_operador_transacao, conta_id) VALUES (17, '2022-09-10 12:15:00+03', 5600.00, 'TRANSFERENCIA', 'Carol', 5);
+INSERT INTO transferencia (id, data_transferencia, valor, tipo, nome_operador_transacao, conta_id) VALUES (18, '2022-09-20 12:15:00+03', 400.00, 'TRANSFERENCIA', 'Carol', 5);
