@@ -3,13 +3,9 @@ package br.com.banco;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
-import org.junit.Assert;
 import org.junit.Test;
-import org.junit.platform.commons.util.CollectionUtils;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -23,8 +19,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -182,7 +176,94 @@ public class BancoApplicationTests {
     }
 
     @Test
-    public void whenArgsOperatorAndDate_thenOK(){}
+    public void whenArgsOperatorAndBeginDate_thenOK() throws Exception {
+        Account a1 = createRandomAccount();
+        Transaction t1 = createRandomTransferWithDate(a1.getID(), "22/12/2021");
+        Transaction t2 = createRandomTransferWithDate(a1.getID(), "23/12/2021");
+        Transaction t3 = createRandomTransferWithDate(a1.getID(), "24/12/2021");
+
+        System.out.println("Created 1 accounts: \n\n" + a1);
+        System.out.println("\n\nCreated 2 transactions: \n\n" + t1 + "\n" + t2 + "\n" + t3);
+
+        var response = mvc.perform(
+                        get("/")
+                                .header("id", String.valueOf(a1.getID()))
+                                .param("operatorName", t2.getOperatorName())
+                                .param("beginDate", "23/12/2021"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String responseBody = response.getResponse().getContentAsString();
+        List<Transaction> responseList = objectMapper.readValue(responseBody, new TypeReference<>() {});
+        List<Transaction> expectedList = Arrays.asList(t2);
+
+        System.out.println("------------------------");
+        System.out.println("RESPONSE: \n\n" + responseList);
+
+        checkListsEqual(expectedList, responseList);
+    }
+
+    @Test
+    public void whenArgsOperatorAndEndDate_thenOK() throws Exception {
+        Account a1 = createRandomAccount();
+        Transaction t1 = createRandomTransferWithDate(a1.getID(), "22/12/2021");
+        Transaction t2 = createRandomTransferWithDate(a1.getID(), "23/12/2021");
+        Transaction t3 = createRandomTransferWithDate(a1.getID(), "24/12/2021");
+
+        System.out.println("Created 1 accounts: \n\n" + a1);
+        System.out.println("\n\nCreated 2 transactions: \n\n" + t1 + "\n" + t2 + "\n" + t3);
+
+        var response = mvc.perform(
+                        get("/")
+                                .header("id", String.valueOf(a1.getID()))
+                                .param("operatorName", t2.getOperatorName())
+                                .param("endDate", "23/12/2021"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String responseBody = response.getResponse().getContentAsString();
+        List<Transaction> responseList = objectMapper.readValue(responseBody, new TypeReference<>() {});
+        List<Transaction> expectedList = Arrays.asList(t2);
+
+        System.out.println("------------------------");
+        System.out.println("RESPONSE: \n\n" + responseList);
+
+        checkListsEqual(expectedList, responseList);
+    }
+
+    @Test
+    public void whenArgsOperatorAndPeriod_thenOK() throws Exception{
+        Account a1 = createRandomAccount();
+        Transaction t1 = createRandomTransferWithDateAndOperator(a1.getID(), "22/12/2021", "Operator A");
+        Transaction t2 = createRandomTransferWithDateAndOperator(a1.getID(), "23/12/2021", "Operator A");
+        Transaction t3 = createRandomTransferWithDateAndOperator(a1.getID(), "24/12/2021", "Operator B");
+        Transaction t4 = createRandomTransferWithDateAndOperator(a1.getID(), "25/12/2021", "Operator A");
+        Transaction t5 = createRandomTransferWithDateAndOperator(a1.getID(), "26/12/2021", "Operator A");
+
+        System.out.println("Created 1 accounts: \n\n" + a1);
+        System.out.println("\n\nCreated 5 transactions: \n\n" + t1 + "\n" + t2 + "\n" + t3 + "\n" + t4 + "\n" + t5);
+
+        var response = mvc.perform(
+                        get("/")
+                                .header("id", String.valueOf(a1.getID()))
+                                .param("operatorName", t1.getOperatorName())
+                                .param("beginDate", "22/12/2021")
+                                .param("endDate", "26/12/2021"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String responseBody = response.getResponse().getContentAsString();
+        List<Transaction> responseList = objectMapper.readValue(responseBody, new TypeReference<>() {});
+        List<Transaction> expectedList = Arrays.asList(t1, t2, t4, t5);
+
+        System.out.println("------------------------");
+        System.out.println("RESPONSE: \n\n" + responseList);
+
+        checkListsEqual(expectedList, responseList);
+    }
 
     private Account createRandomAccount() {
         String name = faker.name().fullName();
@@ -209,12 +290,31 @@ public class BancoApplicationTests {
         return transactionRepository.save(transaction);
     }
 
+    private Transaction createRandomTransferWithDate(long accountId, String dateStr) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        BigDecimal value = BigDecimal.valueOf(random.nextDouble());
+        String type = "Transferencia";
+        String operatorName = faker.name().fullName();
+        Date date = sdf.parse(dateStr);
+        Transaction transaction = new Transaction(date, value, type, operatorName, accountId);
+        return transactionRepository.save(transaction);
+    }
+
+    private Transaction createRandomTransferWithDateAndOperator(long accountId, String dateStr, String operatorName) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        BigDecimal value = BigDecimal.valueOf(random.nextDouble());
+        String type = "Transferencia";
+        Date date = sdf.parse(dateStr);
+        Transaction transaction = new Transaction(date, value, type, operatorName, accountId);
+        return transactionRepository.save(transaction);
+    }
+
     private Transaction createRandomTransactionWithDate(long accountId, String dateStr) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         String[] operationTypes = {"Transferencia", "Saque", "Deposito"};
         BigDecimal value = BigDecimal.valueOf(random.nextDouble());
         String type = operationTypes[random.nextInt(3)];
-        String operatorName = faker.name().fullName();
+        String operatorName = (type == "Transferencia") ? faker.name().fullName() : null;
         Date date = sdf.parse(dateStr);
         Transaction transaction = new Transaction(date, value, type, operatorName, accountId);
         return transactionRepository.save(transaction);
