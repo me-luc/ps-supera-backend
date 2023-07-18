@@ -2,12 +2,14 @@ package br.com.banco;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "TRANSFERENCIA")
 public class Transaction {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "DATA_TRANSFERENCIA")
@@ -27,10 +29,11 @@ public class Transaction {
 
     public Transaction(){};
 
-    public Transaction(Long id, Date transferDate, BigDecimal value, String type, String operatorName, Long accountId) {
-        this.id = id;
+    public Transaction(Date transferDate, BigDecimal value, String type, String operatorName, Long accountId) {
         this.transferDate = transferDate;
-        this.value = value;
+        this.value = (type == "Saque")
+                ? value.multiply(BigDecimal.valueOf(-1)).setScale(2, RoundingMode.CEILING)
+                : value.setScale(2, RoundingMode.CEILING);
         this.type = type;
         this.operatorName = operatorName;
         this.accountId = accountId;
@@ -86,13 +89,33 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transaction{" +
-                "id=" + id +
-                ", transferDate=" + transferDate +
-                ", value=" + value +
-                ", type='" + type + '\'' +
-                ", operatorName='" + operatorName + '\'' +
-                ", accountId=" + accountId +
-                '}';
+        return """
+            Transaction {
+                id = %d,
+                transferDate = %s,
+                value = %s,
+                type = '%s',
+                operatorName = '%s',
+                accountId = %d
+            }
+            """.formatted(id, transferDate, value, type, operatorName, accountId);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Transaction that = (Transaction) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(transferDate, that.transferDate) &&
+                Objects.equals(value, that.value) &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(operatorName, that.operatorName) &&
+                Objects.equals(accountId, that.accountId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, transferDate, value, type, operatorName, accountId);
     }
 }
