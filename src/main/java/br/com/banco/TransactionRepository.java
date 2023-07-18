@@ -48,7 +48,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                         AND
                     DATA_TRANSFERENCIA >= ?2
                         AND
-                    NOME_OPERADOR_TRANSACAO = %?3%
+                    NOME_OPERADOR_TRANSACAO LIKE CONCAT('%', ?3, '%')
             """, nativeQuery = true)
     List<Transaction> findByBeginDateAndOperatorName(Long accountId, Date beginDate, String operatorName);
 
@@ -60,7 +60,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                     AND
                 DATA_TRANSFERENCIA < ?2
                     AND
-                NOME_OPERADOR_TRANSACAO = %?3%
+                NOME_OPERADOR_TRANSACAO LIKE CONCAT('%', ?3, '%')
             """, nativeQuery = true)
     List<Transaction> findByEndDateAndOperatorName(Long accountId, Date endDate, String operatorName);
 
@@ -86,7 +86,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                 AND
             DATA_TRANSFERENCIA < ?3
                 AND
-            NOME_OPERADOR_TRANSACAO = %?4%
+            NOME_OPERADOR_TRANSACAO LIKE CONCAT('%', ?4, '%')
         """, nativeQuery = true)
     List<Transaction> findByPeriodAndOperatorName(Long accountId, Date beginDate, Date endDate, String operatorName);
 }
